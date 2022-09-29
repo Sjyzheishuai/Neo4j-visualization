@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="{% static 'echarts.min.js' %}"></script>
+</head>
+<body>
+<div id="container" style="width: 800px;height: 700px;border: 2px solid black;float: left;margin-top: 50px;"></div>
+<div style="width: 800px;height: 750px;float: right;margin-right: 10px;">
+    <div style="width: 800px;height: 50px;border-top: 2px solid black;border-left: 2px solid black;border-right: 2px solid black">
+        <form action="/" method="post">
+            <input type="text" name="node" style="width: 250px;height: 20px; margin-top: 10px;margin-left: 20px;">
+            <input type="submit" value="查询">
+        </form>
+    </div>
+    {% if ctx %}
+        <div style="width: 800px;height: 700px;border: 2px solid black;text-align: center;line-height: 704px;">
+            <h1>该数据库中未添加该实体</h1>
+        </div>
+    {% elif search_neo4j_data %}
+         <div id="container_search" style="width: 800px;height: 700px;border: 2px solid black"></div>
+    {% else %}
+        <div style="width: 800px;height: 700px;border: 2px solid black;text-align: center;line-height: 704px;"></div>
+    {% endif %}
+</div>
+<script type="text/javascript">
+    {#查询所有#}
+    var neo4j_data = [{{ neo4j_data|safe }}]
+    var data1 = neo4j_data[0]['data']
+    var links1 = neo4j_data[0]['links']
+    {#console.log(data1)#}
+    {#console.log(links1)#}
+    var myChart1 = echarts.init(document.getElementById('container'));
+    var categories1 = [{name: "对象"}, {name: "属性"}, {name: "实例"}];
+    option1 = {
+        // 图的标题
+        title: {
+            text: '三国人物关系图谱'
+        },
+        // 提示框的配置
+        tooltip: {
+            formatter: function (x) {
+                return x.data.des;
+            }
+        },
+        // 工具箱
+        toolbox: {
+            // 显示工具箱
+            show: true,
+            feature: {
+                mark: {
+                    show: true
+                },
+                // 还原
+                restore: {
+                    show: true
+                },
+                // 保存为图片
+                saveAsImage: {
+                    show: true
+                }
+            }
+        },
+        legend: [{
+            // selectedMode: 'single',
+            data: categories1.map(function (a) {
+                return a.name;
+            })
+        }],
+        series: [{
+            type: 'graph', // 类型:关系图
+            layout: 'force', //图的布局，类型为力导图
+            symbolSize: 40, // 调整节点的大小
+            roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+            edgeSymbol: ['circle', 'arrow'],
+            edgeSymbolSize: [2, 10],
+            edgeLabel: {
+                normal: {
+                    textStyle: {
+                        fontSize: 20
+                    }
+                }
+            },
+            force: {
+                repulsion: 2500,
+                edgeLength: [10, 50]
+            },
+            draggable: true,
+            lineStyle: {
+                normal: {
+                    width: 2,
+                    color: '#4b565b',
+                }
+            },
+            edgeLabel: {
+                normal: {
+                    show: true,
+                    formatter: function (x) {
+                        return x.data.name;
+                    }
+                }
+            },
+            label: {
+                normal: {
+                    show: true,
+                    textStyle: {}
+                }
+            },
+
+            // 数据
+            data: data1,
+            links: links1,
+            categories: categories1,
+        }]
+    };
+    myChart1.setOption(option1);
+
+    {#查询单个#}
+    var search_neo4j_data=[{{ search_neo4j_data|safe }}]
+    var data2=search_neo4j_data[0]['data']
+    var links2=search_neo4j_data[0]['links']
+    {#console.log(data2)#}
+    {#console.log(links2)#}
+    var myChart2 = echarts.init(document.getElementById('container_search'));
+    var categories2 = [{name: "对象"}, {name: "属性"}, {name: "实例"}];
+    option2 = {
+        // 图的标题
+        title: {
+            text: '查询人物关系图谱'
+        },
+        // 提示框的配置
+        tooltip: {
+            formatter: function (x) {
+                return x.data.des;
+            }
+        },
+        // 工具箱
+        toolbox: {
+            // 显示工具箱
+            show: true,
+            feature: {
+                mark: {
+                    show: true
+                },
+                // 还原
+                restore: {
+                    show: true
+                },
+                // 保存为图片
+                saveAsImage: {
+                    show: true
+                }
+            }
+        },
+        legend: [{
+            // selectedMode: 'single',
+            data: categories2.map(function (a) {
+                return a.name;
+            })
+        }],
+        series: [{
+            type: 'graph', // 类型:关系图
+            layout: 'force', //图的布局，类型为力导图
+            symbolSize: 40, // 调整节点的大小
+            roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+            edgeSymbol: ['circle', 'arrow'],
+            edgeSymbolSize: [2, 10],
+            edgeLabel: {
+                normal: {
+                    textStyle: {
+                        fontSize: 20
+                    }
+                }
+            },
+            force: {
+                repulsion: 2500,
+                edgeLength: [10, 50]
+            },
+            draggable: true,
+            lineStyle: {
+                normal: {
+                    width: 2,
+                    color: '#4b565b',
+                }
+            },
+            edgeLabel: {
+                normal: {
+                    show: true,
+                    formatter: function (x) {
+                        return x.data.name;
+                    }
+                }
+            },
+            label: {
+                normal: {
+                    show: true,
+                    textStyle: {}
+                }
+            },
+
+            // 数据
+            data: data2,
+            links: links1,
+            categories: categories2,
+        }]
+    };
+    myChart2.setOption(option2);
+
+</script>
+</body>
+</html>
